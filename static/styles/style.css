@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+*{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	text-decoration: none;
+}
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.page_title{
+	position: absolute;
+	font-size: 18px;
+	color: white;
+	right: 0;
+	left: 0;
+	padding-left: 20px;
+	line-height: 70px;
+	text-align: left;
+	background: #062836;
+	font-weight: bold;
+}
+
+.sidebar {
+	/*position: fixed;*/
+	left: 0;
+	top: 70px;
+	width: 12%;
+	bottom: 0;
+	background: #042331;
+	transition: all .1s ease;
+	position: absolute;
+}
+
+.sidebar header {
+	font-size: 18px;
+    font-weight: normal;
+    color: white;
+    width: auto;
+    padding-left: 20px;
+    line-height: 70px;
+    text-align: left;
+    background: #094f71;
+	box-sizing: border-box;
+	border-bottom: 1px solid black;
+	border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.sidebar ul li{
+	display: block;
+	height: 100%;
+	line-height: 65px;
+	font-size: 14px;
+	font-weight: normal;
+	color: white;
+	padding-left: 20px;
+	box-sizing: border-box;
+	border-bottom: 1px solid black;
+	border-top: 1px solid rgba(255,255,255,.1);
+	transition: .1s;
+}
+ul li:hover{
+	padding-left: 50px;
+	/*font-size: 16px;*/
+	background-color: black;
+	cursor: pointer;
+}
+
+.active {
+	background-color: black;
+}
+
+div#layout {
+	width: 84%;
+	height: 85%;
+    margin-left: 14%;
+	margin-right: 2%;
+    margin-top: 6%;
+	margin-bottom: 1%;
+    text-align: center;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    position: absolute;
+	box-sizing: border-box;
+}
+
+div#container {
+	margin:5%;
+	height: 80%;
+
+    background-color: #fff;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+	box-sizing: border-box;
+}
