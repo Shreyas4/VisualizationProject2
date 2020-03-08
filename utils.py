@@ -1,7 +1,8 @@
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 
 def preprocess(df):
@@ -39,6 +40,12 @@ def stratsampler(df):
 
 
 def screePCAHandler(df):
+    pca = PCA(n_components=29)
+    x = StandardScaler().fit_transform(df)
+    principalComponents = pca.fit_transform(x)
+    principalDf = pd.DataFrame(data=principalComponents)
+    percent_variance = np.round(pca.explained_variance_ratio_ * 100, decimals=2)
+
     return None
 
 
