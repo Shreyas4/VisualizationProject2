@@ -10,21 +10,20 @@
     <header>U.S. Pollution Analysis - Data Reduction</header>
 </div>
 <div class="sidebar">
-    {#    <header>Data reduction</header>#}
     <header>Tasks:</header>
-    <ul id="tasks-menu_list">
-        <li class="list_item active" onclick="AddPostData('screePCA');">Scree Plot - PCA</li>
-        <li class="list_item" onclick="AddPostData('screePCALoadings');">Scree Plot - PCA loadings</li>
-        <li class="list_item" onclick="AddPostData('scatter2PCA');">Scatterplot - 2 PCA vectors</li>
-        <li class="list_item" onclick="AddPostData('mdsEu');">MDS - Euclidian</li>
-        <li class="list_item" onclick="AddPostData('mdsCo');">MDS - Correlation</li>
-        <li class="list_item" onclick="AddPostData('scatterMa');">Scatterplot Matrix</li>
+    <ul id="tasks-menu-list">
+        <li class="list_item active" value="screePCA">Scree Plot - PCA</li>
+        <li class="list_item" value="screePCALoadings">Scree Plot - PCA loadings</li>
+        <li class="list_item" value="scatter2PCA">Scatterplot - 2 PCA vectors</li>
+        <li class="list_item" value="mdsEu">MDS - Euclidian</li>
+        <li class="list_item" value="mdsCo">MDS - Correlation</li>
+        <li class="list_item" value="scatterMa">Scatterplot Matrix</li>
     </ul>
     <header>Data type:</header>
     <ul id="data-menu-list">
-        <li class="list_item active">Original</li>
-        <li class="list_item">Random Sampled</li>
-        <li class="list_item">Stratified Sampled</li>
+        <li value="og" class="list_item active">Original</li>
+        <li value="rn" class="list_item">Random Sampled</li>
+        <li value="st" class="list_item">Stratified Sampled</li>
     </ul>
 </div>
 
@@ -34,43 +33,8 @@
     </div>
 </div>
 
-<script>
-    header = document.getElementById("tasks-menu_list");
-    items = header.getElementsByClassName("list_item");
-    console.log(items);
-    for (let i = 0; i < items.length; i++) {
-        items[i].addEventListener("click", function() {
-            const current = header.getElementsByClassName("active");
-            if (current.length > 0) {
-                current[0].className = current[0].className.replace(" active", "");
-            }
-            this.className += " active";
-        });
-    }
-
-    function AddPostData(value) {
-        console.log('Come here', value);
-        {#    $(function() { $(this).click(function (event) { $.getJSON('/SomeFunction', { },#}
-        {#function(data) { }); return false; }); });#}
-        {#    }#}
-    }
-</script>
-<script>
-    header2 = document.getElementById("data-menu-list");
-    items2 = header2.getElementsByClassName("list_item");
-    console.log(items2);
-    for (let i = 0; i < items2.length; i++) {
-        items2[i].addEventListener("click", function() {
-            const current = header2.getElementsByClassName("active");
-            if (current.length > 0) {
-                current[0].className = current[0].className.replace(" active", "");
-            }
-            this.className += " active";
-        });
-    }
-
-</script>
-<script src="{{ url_for('static', filename='d3/d3.min.js') }}"></script>
-<script src="{{ url_for('static', filename='index.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="{{ url_for('static', filename='menu_operations.js') }}"></script>
 </body>
 </html>

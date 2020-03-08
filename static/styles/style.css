@@ -62,9 +62,7 @@ body {
 	transition: .1s;
 }
 ul li:hover{
-	padding-left: 50px;
-	/*font-size: 16px;*/
-	background-color: black;
+	padding-left: 30px;
 	cursor: pointer;
 }
 
@@ -75,11 +73,8 @@ ul li:hover{
 div#layout {
 	width: 84%;
 	height: 85%;
-    margin-left: 14%;
-	margin-right: 2%;
-    margin-top: 6%;
-	margin-bottom: 1%;
-    text-align: center;
+	margin: 6% 2% 1% 14%;
+	text-align: center;
     border-style: solid;
     border-color: black;
     border-width: 2px;

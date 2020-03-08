@@ -1,0 +1,29 @@
+header = document.getElementById("tasks-menu-list");
+items = header.getElementsByClassName("list_item");
+for (let i = 0; i < items.length; i++) {
+    items[i].addEventListener("click", function() {
+        const current = header.getElementsByClassName("active");
+        if (current.length > 0) {
+            current[0].className = current[0].className.replace(" active", "");
+        }
+        this.className += " active";
+        updateData(this.attributes.value, document.getElementById("data-menu-list").getElementsByClassName("active")[0].attributes.value);
+    });
+}
+
+header2 = document.getElementById("data-menu-list");
+items2 = header2.getElementsByClassName("list_item");
+for (let i = 0; i < items2.length; i++) {
+    items2[i].addEventListener("click", function() {
+        const current = header2.getElementsByClassName("active");
+        if (current.length > 0) {
+            current[0].className = current[0].className.replace(" active", "");
+        }
+        this.className += " active";
+        updateData(document.getElementById("tasks-menu-list").getElementsByClassName("active")[0].attributes.value, this.attributes.value);
+    });
+}
+
+function updateData(task, datatype) {
+    console.log(task, datatype);
+}
