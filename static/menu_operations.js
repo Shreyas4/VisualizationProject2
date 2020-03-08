@@ -24,6 +24,14 @@ for (let i = 0; i < items2.length; i++) {
     });
 }
 
-function updateData(task, datatype) {
-    console.log(task, datatype);
+function updateChart(chart_data) {
+    console.log(chart_data);
 }
+
+function updateData(task, datatype) {
+    $.post("", {'task': task.value, 'datatype': datatype.value}, function (data_received) {
+        updateChart(data_received);
+    });
+}
+
+updateData({'value': 'screePCA'}, {'value':'og'});

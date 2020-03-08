@@ -6,6 +6,7 @@
 	list-style: none;
 	text-decoration: none;
 }
+
 body {
 	font-family: 'Open Sans', sans-serif;
 }
@@ -24,7 +25,6 @@ body {
 }
 
 .sidebar {
-	/*position: fixed;*/
 	left: 0;
 	top: 70px;
 	width: 12%;
@@ -36,13 +36,13 @@ body {
 
 .sidebar header {
 	font-size: 18px;
-    font-weight: normal;
-    color: white;
-    width: auto;
-    padding-left: 20px;
-    line-height: 70px;
-    text-align: left;
-    background: #094f71;
+	font-weight: normal;
+	color: white;
+	width: auto;
+	padding-left: 20px;
+	line-height: 70px;
+	text-align: left;
+	background: #094f71;
 	box-sizing: border-box;
 	border-bottom: 1px solid black;
 	border-top: 1px solid rgba(255,255,255,.1);
@@ -61,6 +61,7 @@ body {
 	border-top: 1px solid rgba(255,255,255,.1);
 	transition: .1s;
 }
+
 ul li:hover{
 	padding-left: 30px;
 	cursor: pointer;
@@ -75,20 +76,19 @@ div#layout {
 	height: 85%;
 	margin: 6% 2% 1% 14%;
 	text-align: center;
-    border-style: solid;
-    border-color: black;
-    border-width: 2px;
-    position: absolute;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	position: absolute;
 	box-sizing: border-box;
 }
 
 div#container {
-	margin:5%;
-	height: 80%;
-
-    background-color: #fff;
-    border-style: solid;
-    border-color: black;
-    border-width: 2px;
+	margin:3%;
+	height: 88%;
+	background-color: #fff;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
 	box-sizing: border-box;
 }
