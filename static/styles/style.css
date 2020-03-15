@@ -29,7 +29,7 @@ body {
 	top: 70px;
 	width: 12%;
 	bottom: 0;
-	background: #042331;
+	background: #04384b;
 	transition: all .1s ease;
 	position: absolute;
 }
@@ -42,7 +42,7 @@ body {
 	padding-left: 20px;
 	line-height: 70px;
 	text-align: left;
-	background: #094f71;
+	background: #09577a;
 	box-sizing: border-box;
 	border-bottom: 1px solid black;
 	border-top: 1px solid rgba(255,255,255,.1);

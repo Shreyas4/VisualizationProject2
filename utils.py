@@ -1,23 +1,28 @@
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
 import numpy as np
 
 
 def preprocess(df):
+    # df = df.drop(['State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
     df = df.drop(['State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
+    le = LabelEncoder()
+    for col in df.columns.values:
+        if df[col].dtype == object:
+            df[col] = le.fit_transform(df[col])
     for col in ['O3_Mean', 'O3_1st_Max_Value', 'CO_Mean', 'CO_1st_Max_Value']:
         df[col] = df[col].apply(lambda x: x * 1000)
-    for col in ['NO2_1st_Max_Hour', 'O3_1st_Max_Hour', 'SO2_1st_Max_Hour', 'CO_1st_Max_Hour']:
-        df[col] = df[col].apply(lambda x: int(x / 8) + 1)
-    df['Year'] = df['Year'].apply(lambda x: x % 3)
-    # df
-    cats = ['Year', 'NO2_1st_Max_Hour', 'O3_1st_Max_Hour', 'SO2_1st_Max_Hour', 'CO_1st_Max_Hour']
-    for col in cats:
-        df[col] = df[col].astype(object)
-    df = pd.concat([df, pd.get_dummies(df[cats])], axis=1)
-    df = df.drop(cats, axis=1)
+    # for col in ['NO2_1st_Max_Hour', 'O3_1st_Max_Hour', 'SO2_1st_Max_Hour', 'CO_1st_Max_Hour']:
+    #     df[col] = df[col].apply(lambda x: int(x / 8) + 1)
+    # df['Year'] = df['Year'].apply(lambda x: x % 3)
+    # # df
+    # cats = ['Year', 'NO2_1st_Max_Hour', 'O3_1st_Max_Hour', 'SO2_1st_Max_Hour', 'CO_1st_Max_Hour']
+    # for col in cats:
+    #     df[col] = df[col].astype(object)
+    # df = pd.concat([df, pd.get_dummies(df[cats])], axis=1)
+    # df = df.drop(cats, axis=1)
     kmeans = KMeans(n_clusters=4, init='k-means++', max_iter=300, n_init=10, random_state=0)
     pred_y = kmeans.fit_predict(df)
     df['Cluster'] = pred_y
@@ -40,17 +45,52 @@ def stratsampler(df):
 
 
 def screePCAHandler(df):
-    pca = PCA(n_components=29)
-    x = StandardScaler().fit_transform(df)
+    pca = PCA(n_components=df.shape[1])
+    x = MinMaxScaler().fit_transform(df)
     principalComponents = pca.fit_transform(x)
-    principalDf = pd.DataFrame(data=principalComponents)
+    limit = 0
+    sum_ = 0
+    for i in range(0, df.shape[1]):
+        if sum_ <= 0.75:
+            sum_ = sum_ + pca.explained_variance_ratio_[i]
+            limit = i
+        else:
+            break
+    columns = ['PC' + str(x) for x in range(1, df.shape[1]+1)]
     percent_variance = np.round(pca.explained_variance_ratio_ * 100, decimals=2)
-
-    return None
+    data = {'Chart Title': 'Scree Plot of PCA Vectors', 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
+                                                                                           'variance',
+            'xticks': columns, 'yticks': list(percent_variance), 'limit': limit+1, 'Acceptable variance explained':
+                sum_}
+    return data
 
 
 def screePCALoadingsHandler(df):
-    return None
+    pca = PCA(n_components=df.shape[1])
+    x = MinMaxScaler().fit_transform(df)
+    principalComponents = pca.fit_transform(x)
+    limit = 0
+    sum_ = 0
+    for i in range(0, df.shape[1]):
+        if sum_ <= 0.75:
+            sum_ = sum_ + pca.explained_variance_ratio_[i]
+            limit = i
+        else:
+            break
+    columns = ['PC' + str(x) for x in range(1, limit + 2)]
+    pcaComponents = pd.DataFrame(data=abs(pca.components_[:, :limit + 1]), columns=columns)
+    pcaComponents['Features'] = df.columns.values
+    pcaComponents['SumSquared'] = 0
+    l = []
+    for i, r in pcaComponents.iterrows():
+        l.append(sum(x * x for x in r['PC1':'PC' + str(limit + 1)].values))
+    pcaComponents['SumSquared'] = l
+    pcaComponents = pcaComponents.sort_values(by='SumSquared', ascending=False)
+    # pca highest loadings
+    data = {'Chart Title': 'Scree Plot of attributes with highest PCA loadings', 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
+                                                                                           'variance',
+            'xticks': list(pcaComponents['Features']), 'yticks': list(pcaComponents['SumSquared'])}
+    return data
 
 
 def scatter2PCAHandler(df):

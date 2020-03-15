@@ -1,5 +1,5 @@
 header = document.getElementById("tasks-menu-list");
-items = header.getElementsByClassName("list_item");
+items = header.getElementsByClassName("list-item");
 for (let i = 0; i < items.length; i++) {
     items[i].addEventListener("click", function() {
         const current = header.getElementsByClassName("active");
@@ -12,7 +12,7 @@ for (let i = 0; i < items.length; i++) {
 }
 
 header2 = document.getElementById("data-menu-list");
-items2 = header2.getElementsByClassName("list_item");
+items2 = header2.getElementsByClassName("list-item");
 for (let i = 0; i < items2.length; i++) {
     items2[i].addEventListener("click", function() {
         const current = header2.getElementsByClassName("active");
