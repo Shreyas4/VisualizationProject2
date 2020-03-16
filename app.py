@@ -20,17 +20,17 @@ def index():
             process_df = utils.stratsampler(df)
 
         if task == 'screePCA':
-            return jsonify(utils.screePCAHandler(process_df))
+            return jsonify(utils.screePCAHandler(process_df, datatype))
         elif task == 'screePCALoadings':
-            return jsonify(utils.screePCALoadingsHandler(process_df))
+            return jsonify(utils.screePCALoadingsHandler(process_df, datatype))
         elif task == 'scatter2PCA':
-            return jsonify(utils.scatter2PCAHandler(process_df))
+            return jsonify(utils.scatter2PCAHandler(process_df, datatype))
         elif task == 'mdsEu':
-            return jsonify(utils.mdsEuHandler(process_df))
+            return jsonify(utils.mdsEuHandler(process_df, datatype))
         elif task == 'mdsCo':
-            return jsonify(utils.mdsCoHandler(process_df))
+            return jsonify(utils.mdsCoHandler(process_df, datatype))
         elif task == 'scatterMa':
-            return jsonify(utils.scatterMaHandler(process_df))
+            return jsonify(utils.scatterMaHandler(process_df, datatype))
         else:
             return render_template(index.html)
     return render_template('index.html')

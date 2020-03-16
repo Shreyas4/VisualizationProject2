@@ -4,6 +4,12 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
 import numpy as np
 
+data_type = {
+    'og': 'original data',
+    'rn': 'random sampled data',
+    'st': 'stratified sampled data'
+}
+
 
 def preprocess(df):
     # df = df.drop(['State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
@@ -44,7 +50,7 @@ def stratsampler(df):
     return firstDf
 
 
-def screePCAHandler(df):
+def screePCAHandler(df, datatype):
     pca = PCA(n_components=df.shape[1])
     x = MinMaxScaler().fit_transform(df)
     principalComponents = pca.fit_transform(x)
@@ -62,7 +68,7 @@ def screePCAHandler(df):
 
     running_sum = [round(list(percent_variance)[i]+ sum(list(percent_variance)[:i]), 2) for i in range(0, len(list(percent_variance)))]
 
-    data = {'Chart Title': 'Scree Plot of PCA Vectors', 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
+    data = {'Chart Title': 'Scree Plot of PCA Vectors for '+data_type[datatype], 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
                                                                                            'variance',
             'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold-x':columns[limit],
             'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
@@ -71,7 +77,7 @@ def screePCAHandler(df):
     return data
 
 
-def screePCALoadingsHandler(df):
+def screePCALoadingsHandler(df, datatype):
     pca = PCA(n_components=df.shape[1])
     x = MinMaxScaler().fit_transform(df)
     principalComponents = pca.fit_transform(x)
@@ -93,23 +99,23 @@ def screePCALoadingsHandler(df):
     pcaComponents['SumSquared'] = l
     pcaComponents = pcaComponents.sort_values(by='SumSquared', ascending=False)
     # pca highest loadings
-    data = {'Chart Title': 'Top 3 attributes in a scree Plot of highest PCA loadings', 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
+    data = {'Chart Title': 'Top 3 attributes with highest PCA loadings for '+data_type[datatype], 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
                                                                                                                    'variance',
             'xticks': list(pcaComponents['Features'])[:15],'threshold-x':list(pcaComponents['Features'])[2], 'threshold':list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])[:15]}
     return data
 
 
-def scatter2PCAHandler(df):
+def scatter2PCAHandler(df, datatype):
     return None
 
 
-def mdsEuHandler(df):
+def mdsEuHandler(df, datatype):
     return None
 
 
-def mdsCoHandler(df):
+def mdsCoHandler(df, datatype):
     return None
 
 
-def scatterMaHandler(df):
+def scatterMaHandler(df, datatype):
     return None
