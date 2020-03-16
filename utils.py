@@ -106,7 +106,18 @@ def screePCALoadingsHandler(df, datatype):
 
 
 def scatter2PCAHandler(df, datatype):
-    return None
+    pca = PCA(n_components=df.shape[1])
+    x = MinMaxScaler().fit_transform(df)
+    principalComponents = pca.fit_transform(x)
+    principalComponents = principalComponents[:, :2]
+    principalComponents = pd.DataFrame(data=np.round(principalComponents, 3), columns=['PC1', 'PC2'])
+    data = {'Chart Title': 'Scatter plot of top 2 PCA vectors for ' + data_type[datatype],
+            'xlabel': 'PC1', 'ylabel': 'PC2',
+            'xticks': list(principalComponents['PC1']), 'yticks': list(principalComponents['PC2']),
+            'minmax':{'p1_min': min(list(principalComponents['PC1'])), 'p1_max': max(list(principalComponents['PC1'])),
+                      'p2_min': min(list(principalComponents['PC2'])), 'p2_max': max(list(principalComponents['PC2']))}
+            }
+    return data
 
 
 def mdsEuHandler(df, datatype):

@@ -32,6 +32,9 @@ function updateChart(chart_data, task, datatype) {
         case 'screePCALoadings':
             drawPCALoadings('screePCALoadings', datatype.value, chart_data);
             break;
+        case 'scatter2PCA':
+            drawScatter2PCA('scatter2PCA', datatype.value, chart_data);
+            break;
         default:
         // code block
     }
@@ -106,7 +109,6 @@ function drawScreePCA(task, datatype, chart_data) {
     var xLabelPosition = 1.7;
     if (task==='screePCALoadings') {
         rotateBy = '-30';
-        // xLabelPosition = 2.3;
     }
 
     chart.append('g')
@@ -114,8 +116,9 @@ function drawScreePCA(task, datatype, chart_data) {
         .call(d3.axisBottom(xScale))
         .selectAll("text")
         .style("text-anchor", "end")
-        .attr("transform", "rotate("+rotateBy+")")
-        .selectAll('.tick line').remove();
+        .attr("transform", "rotate("+rotateBy+")");
+
+    chart.selectAll('.tick line').remove();
 
     if (task==='screePCA'){
         chart.append('g')
@@ -271,4 +274,114 @@ function drawScreePCA(task, datatype, chart_data) {
 
 function drawPCALoadings(task, datatype, chart_data) {
     drawScreePCA(task, datatype, chart_data);
+}
+
+function drawScatter2PCA(scatter2PCA, value, chart_data) {
+    console.log(scatter2PCA, value, chart_data);
+    d3.selectAll("svg > *").remove();
+    const svg = d3.select('svg');
+
+    const svgMargin = 100;
+    const svgHeight =document.getElementById('container').clientHeight-(2*svgMargin);
+    const svgWidth = document.getElementById('container').clientWidth-(2*svgMargin);
+
+    const chart = svg.append('g')
+        .attr('transform', 'translate('+svgMargin+','+svgMargin+')');
+
+    var xScale = d3.scaleLinear()
+        .range([0, svgWidth])
+        .domain([Math.floor(chart_data['minmax']['p1_min']), Math.ceil(chart_data['minmax']['p1_max'])]);
+
+    var yScale = d3.scaleLinear()
+        .range([svgHeight, 0])
+        .domain([Math.floor(chart_data['minmax']['p2_min']), Math.ceil(chart_data['minmax']['p2_max'])]);
+
+    var my_sample = [];
+    for (var i=0; i<chart_data['xticks'].length; i++) {
+        my_sample.push({'x':chart_data['xticks'][i], 'y':chart_data['yticks'][i]});
+    }
+
+    yList = my_sample.map(function (a) {
+        return a.y;
+    });
+    xList = my_sample.map(function (a) {
+        return a.x;
+    });
+
+    const color = '#117D7F';
+    const colorScale = d3.scaleLinear()
+        .domain([chart_data['minmax']['p1_min'], chart_data['minmax']['p1_max']])
+        .range([d3.rgb(color).darker(), d3.rgb(color).brighter()]);
+
+    chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + yScale(0) + ")")
+        .call(d3.axisBottom(xScale))
+        .append("text")
+        .attr("class", "dotvalue")
+        .attr("x", svgWidth)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("PC1");
+
+    chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + xScale(0) + ",0)")
+        .call(d3.axisLeft(yScale))
+        .append("text")
+        .attr("class", "dotvalue")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("PC2");
+
+    chart.selectAll(".dot")
+        .data(my_sample)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
+        .attr("cx", function(d) { return xScale(d.x); })
+        .attr("cy", function(d) { return yScale(d.y); })
+        .style("stroke", function(d) { return colorScale(Math.abs(d.x)); })
+        .style("fill", function(d) { return colorScale(Math.abs(d.x)); })
+        .on('mouseover', function (d) {
+            d3.select(this)
+                .transition()
+                .duration(100)
+                .attr("r", 10.5)
+                .style("stroke", '#000')
+                .style("fill", '#000');
+            chart.append("text")
+                .attr('class', 'dotvalue')
+                .attr('x', function() {
+                    return xScale(d.x+0.06);
+                })
+                .attr('y', function() {
+                    return yScale(d.y);
+                })
+                .text(function() {
+                    return [d.x, d.y];
+                });
+        })
+        .on('mouseout', function () {
+            d3.select(this)
+                .transition()
+                .duration(100)
+                .attr("r", 5.0)
+                .style("stroke", function(d) { return colorScale(Math.abs(d.x)); })
+                .style("fill", function(d) { return colorScale(Math.abs(d.x)); })
+            ;
+            d3.selectAll('.dotvalue')
+                .remove()
+        });
+
+    svg.append('text')
+        .attr('class', 'title')
+        .attr('x', svgWidth / 2 + svgMargin)
+        .attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .text(chart_data['Chart Title']);
+
 }
