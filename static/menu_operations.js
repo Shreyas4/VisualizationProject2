@@ -238,7 +238,7 @@ function drawScreePCA(task, datatype, chart_data) {
             .attr('class', 'label')
             .attr('x', xScale(chart_data['threshold-x'])+20)
             .attr('y', yScale(chart_data['Acceptable variance explained'])+20)
-            .text(chart_data['Acceptable variance explained']+ "% variance explained by 6 vectors");
+            .text(chart_data['Acceptable variance explained']+ "% variance explained by "+ chart_data['limit'] + " vectors");
 
     }
 

@@ -66,7 +66,7 @@ def screePCAHandler(df):
                                                                                            'variance',
             'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold-x':columns[limit],
             'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
-                round(sum_*100, 2), 'running_sum': running_sum[:15]
+                round(sum_*100, 2), 'running_sum': running_sum[:15], 'limit':limit+1
             }
     return data
 
