@@ -57,11 +57,16 @@ def screePCAHandler(df):
         else:
             break
     columns = ['PC' + str(x) for x in range(1, df.shape[1]+1)]
+
     percent_variance = np.round(pca.explained_variance_ratio_ * 100, decimals=2)
+
+    running_sum = [round(list(percent_variance)[i]+ sum(list(percent_variance)[:i]), 2) for i in range(0, len(list(percent_variance)))]
+
     data = {'Chart Title': 'Scree Plot of PCA Vectors', 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
                                                                                            'variance',
-            'xticks': columns, 'yticks': list(percent_variance), 'limit': limit+1, 'Acceptable variance explained':
-                sum_}
+            'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
+                sum_, 'running_sum': running_sum[:15]
+            }
     return data
 
 
@@ -83,13 +88,13 @@ def screePCALoadingsHandler(df):
     pcaComponents['SumSquared'] = 0
     l = []
     for i, r in pcaComponents.iterrows():
-        l.append(sum(x * x for x in r['PC1':'PC' + str(limit + 1)].values))
+        l.append(round(sum(x * x for x in r['PC1':'PC' + str(limit + 1)].values), 4))
     pcaComponents['SumSquared'] = l
     pcaComponents = pcaComponents.sort_values(by='SumSquared', ascending=False)
     # pca highest loadings
-    data = {'Chart Title': 'Scree Plot of attributes with highest PCA loadings', 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
-                                                                                           'variance',
-            'xticks': list(pcaComponents['Features']), 'yticks': list(pcaComponents['SumSquared'])}
+    data = {'Chart Title': 'Top 3 attributes in a scree Plot of highest PCA loadings', 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
+                                                                                                                   'variance',
+            'xticks': list(pcaComponents['Features'])[:15], 'threshold':list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])[:15]}
     return data
 
 

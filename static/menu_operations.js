@@ -50,15 +50,20 @@ function drawScreePCA(task, datatype, chart_data) {
     d3.selectAll("svg > *").remove();
     const svg = d3.select('svg');
 
-    const svgMargin = 80;
-    const svgHeight =700-(2*svgMargin);
-    const svgWidth = 1500-(2*svgMargin);
+    const svgMargin = 120;
+    const svgHeight =document.getElementById('container').clientHeight-(2*svgMargin);
+    const svgWidth = document.getElementById('container').clientWidth-(2*svgMargin);
+
     const chart = svg.append('g')
         .attr('transform', 'translate('+svgMargin+','+svgMargin+')');
 
     var my_sample = [];
     for (var i=0; i<chart_data['xticks'].length; i++) {
-        my_sample.push({'selected_attr':chart_data['xticks'][i], 'count':chart_data['yticks'][i]});
+        if (task==='screePCA') {
+            my_sample.push({'selected_attr':chart_data['xticks'][i], 'count':chart_data['yticks'][i], 'running_sum': chart_data['running_sum'][i]});
+        } else {
+            my_sample.push({'selected_attr':chart_data['xticks'][i], 'count':chart_data['yticks'][i]});
+        }
     }
 
     yList = my_sample.map(function (a) {
@@ -73,14 +78,25 @@ function drawScreePCA(task, datatype, chart_data) {
         .domain(xList)
         .padding(0.35);
 
-    const yScale = d3.scaleLinear()
+    let yScale = d3.scaleLinear()
         .range([svgHeight, 0])
         .domain([0, d3.max(yList)+d3.max(yList)/10]);
+    if (task==='screePCA') {
+        yScale = d3.scaleLinear()
+            .range([svgHeight, 0])
+            .domain([0, 100]);
+    }
 
     const color = '#117D7F';
     const colorScale = d3.scaleLinear()
         .domain([d3.min(yList), d3.max(yList)])
         .range([d3.rgb(color).darker(), d3.rgb(color).brighter()]);
+
+    const preThresholdColor = '#7f2420';
+
+    const preThresholdColorScale = d3.scaleLinear()
+        .domain([d3.min(yList), d3.max(yList)])
+        .range([d3.rgb(preThresholdColor).darker(), d3.rgb(preThresholdColor).brighter()]);
 
     const horizontalLines = function () {
         return d3.axisLeft()
@@ -90,19 +106,26 @@ function drawScreePCA(task, datatype, chart_data) {
     var rotateBy = '0';
     var xLabelPosition = 1.7;
     if (task==='screePCALoadings') {
-                rotateBy = '-65';
-                xLabelPosition = 2.3;
-            }
+        rotateBy = '-30';
+        // xLabelPosition = 2.3;
+    }
 
     chart.append('g')
         .attr('transform', 'translate(0,'+svgHeight+')')
         .call(d3.axisBottom(xScale))
         .selectAll("text")
         .style("text-anchor", "end")
-        .attr("transform", "rotate("+rotateBy+")");
+        .attr("transform", "rotate("+rotateBy+")")
+        .selectAll('.tick line').remove();
 
-    chart.append('g')
-        .call(d3.axisLeft(yScale));
+    if (task==='screePCA'){
+        chart.append('g')
+            .call(d3.axisLeft(yScale).tickFormat(function(d) { return d + "%"; })).selectAll('.tick line').remove();
+    } else {
+        chart.append('g')
+            .call(d3.axisLeft(yScale)).selectAll('.tick line').remove();
+    }
+
 
     chart.append('g')
         .attr('class', 'grid')
@@ -118,7 +141,7 @@ function drawScreePCA(task, datatype, chart_data) {
     barGroups.append('rect')
         .attr('class', 'bar')
         .attr('x', function(g) {
-            return xScale(g.selected_attr);  //Bar width of 20 plus 1 for padding
+            return xScale(g.selected_attr);
         })
         .attr('y', function (g) {
             return yScale(g.count);
@@ -127,7 +150,14 @@ function drawScreePCA(task, datatype, chart_data) {
             return svgHeight - yScale(g.count);
         })
         .attr('width', xScale.bandwidth())
-        .attr('fill', function(d) { return colorScale(d.count) })
+        .attr('fill', function(d) {
+            console.log(d.count, chart_data['threshold']);
+            if (d.count >= chart_data['threshold']) {
+                return preThresholdColorScale(d.count);
+        } else {
+                return colorScale(d.count);
+            }
+        })
         .on('mouseover', function (d) {
             d3.select(this)
                 .transition()
@@ -173,6 +203,27 @@ function drawScreePCA(task, datatype, chart_data) {
             d3.selectAll('.val')
                 .remove()
         });
+
+
+    if (task==='screePCA') {
+        const lineElements = chart.selectAll()
+            .data(my_sample)
+            .enter()
+            .append('g');
+
+        const lineGenerator = d3.line()
+            .x(function (d) {
+                return xScale(d.selected_attr)+35;
+            })
+            .y(function (d) {
+                return yScale(d.running_sum);
+            });
+
+        lineElements.append('path')
+            .attr('class', 'line-path')
+            .attr('d', lineGenerator(my_sample));
+    }
+
 
     svg.append('text')
         .attr('class', 'label')
