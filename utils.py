@@ -64,8 +64,9 @@ def screePCAHandler(df):
 
     data = {'Chart Title': 'Scree Plot of PCA Vectors', 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
                                                                                            'variance',
-            'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
-                sum_, 'running_sum': running_sum[:15]
+            'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold-x':columns[limit],
+            'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
+                round(sum_*100, 2), 'running_sum': running_sum[:15]
             }
     return data
 
@@ -94,7 +95,7 @@ def screePCALoadingsHandler(df):
     # pca highest loadings
     data = {'Chart Title': 'Top 3 attributes in a scree Plot of highest PCA loadings', 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
                                                                                                                    'variance',
-            'xticks': list(pcaComponents['Features'])[:15], 'threshold':list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])[:15]}
+            'xticks': list(pcaComponents['Features'])[:15],'threshold-x':list(pcaComponents['Features'])[2], 'threshold':list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])[:15]}
     return data
 
 

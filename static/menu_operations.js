@@ -46,7 +46,6 @@ function updateData(task, datatype) {
 updateData({'value': 'screePCA'}, {'value':'og'});
 
 function drawScreePCA(task, datatype, chart_data) {
-    console.log(datatype, chart_data);
     d3.selectAll("svg > *").remove();
     const svg = d3.select('svg');
 
@@ -151,10 +150,9 @@ function drawScreePCA(task, datatype, chart_data) {
         })
         .attr('width', xScale.bandwidth())
         .attr('fill', function(d) {
-            console.log(d.count, chart_data['threshold']);
             if (d.count >= chart_data['threshold']) {
                 return preThresholdColorScale(d.count);
-        } else {
+            } else {
                 return colorScale(d.count);
             }
         })
@@ -213,7 +211,7 @@ function drawScreePCA(task, datatype, chart_data) {
 
         const lineGenerator = d3.line()
             .x(function (d) {
-                return xScale(d.selected_attr)+35;
+                return xScale(d.selected_attr);
             })
             .y(function (d) {
                 return yScale(d.running_sum);
@@ -222,6 +220,26 @@ function drawScreePCA(task, datatype, chart_data) {
         lineElements.append('path')
             .attr('class', 'line-path')
             .attr('d', lineGenerator(my_sample));
+        chart.append('line')
+            .attr('class', 'identifier')
+            .attr('x1', xScale(chart_data['threshold-x']))
+            .attr('y1', svgHeight)
+            .attr('x2', xScale(chart_data['threshold-x']))
+            .attr('y2', yScale(chart_data['Acceptable variance explained']));
+
+        chart.append('line')
+            .attr('class', 'identifier')
+            .attr('x1', xScale(0))
+            .attr('y1', yScale(chart_data['Acceptable variance explained']))
+            .attr('x2', xScale(chart_data['threshold-x']))
+            .attr('y2', yScale(chart_data['Acceptable variance explained']));
+
+        chart.append("text")
+            .attr('class', 'label')
+            .attr('x', xScale(chart_data['threshold-x'])+20)
+            .attr('y', yScale(chart_data['Acceptable variance explained'])+20)
+            .text(chart_data['Acceptable variance explained']+ "% variance explained by 6 vectors");
+
     }
 
 
@@ -252,6 +270,5 @@ function drawScreePCA(task, datatype, chart_data) {
 }
 
 function drawPCALoadings(task, datatype, chart_data) {
-    console.log(task, datatype, chart_data);
     drawScreePCA(task, datatype, chart_data);
 }
