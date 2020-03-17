@@ -207,9 +207,9 @@ def precomputeMDSCo(df):
     mdsCoOg = pd.DataFrame(data=np.round(mds.fit_transform((df.T).corr()), 3),
                            columns=['MDS1', 'MDS2'])
     mdsCoRn = pd.DataFrame(
-        data=np.round(mds.fit_transform(euclidean_distances((randomsampler(df).T).corr())), 3),
+        data=np.round(mds.fit_transform((randomsampler(df).T).corr()), 3),
         columns=['MDS1', 'MDS2'])
     mdsCoSt = pd.DataFrame(
-        data=np.round(mds.fit_transform(euclidean_distances((stratsampler(df).T).corr())), 3),
+        data=np.round(mds.fit_transform((stratsampler(df).T).corr()), 3),
         columns=['MDS1', 'MDS2'])
     return mdsCoOg, mdsCoRn, mdsCoSt
