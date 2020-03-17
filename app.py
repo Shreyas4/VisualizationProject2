@@ -7,6 +7,8 @@ app = Flask(__name__)
 df = pd.read_csv('VisData.csv')
 df = utils.preprocess(df)
 
+mdsEuOg, mdsEuRn, mdsEuSt = utils.precomputeMDS(df)
+
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -26,7 +28,7 @@ def index():
         elif task == 'scatter2PCA':
             return jsonify(utils.scatter2PCAHandler(process_df, datatype))
         elif task == 'mdsEu':
-            return jsonify(utils.mdsEuHandler(process_df, datatype))
+            return jsonify(utils.mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype))
         elif task == 'mdsCo':
             return jsonify(utils.mdsCoHandler(process_df, datatype))
         elif task == 'scatterMa':

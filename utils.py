@@ -1,8 +1,14 @@
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 import numpy as np
+
+from matplotlib import pyplot as plt
+from matplotlib.collections import LineCollection
+
+from sklearn import manifold
+from sklearn.metrics import euclidean_distances
 
 data_type = {
     'og': 'original data',
@@ -62,17 +68,19 @@ def screePCAHandler(df, datatype):
             limit = i
         else:
             break
-    columns = ['PC' + str(x) for x in range(1, df.shape[1]+1)]
+    columns = ['PC' + str(x) for x in range(1, df.shape[1] + 1)]
 
     percent_variance = np.round(pca.explained_variance_ratio_ * 100, decimals=2)
 
-    running_sum = [round(list(percent_variance)[i]+ sum(list(percent_variance)[:i]), 2) for i in range(0, len(list(percent_variance)))]
+    running_sum = [round(list(percent_variance)[i] + sum(list(percent_variance)[:i]), 2) for i in
+                   range(0, len(list(percent_variance)))]
 
-    data = {'Chart Title': 'Scree Plot of PCA Vectors for '+data_type[datatype], 'xlabel': 'PCA Vectors', 'ylabel': 'Percentage of explained '
-                                                                                           'variance',
-            'xticks': columns[:15], 'yticks': list(percent_variance)[:15], 'threshold-x':columns[limit],
+    data = {'Chart Title': 'Scree Plot of PCA Vectors for ' + data_type[datatype], 'xlabel': 'PCA Vectors',
+            'ylabel': 'Percentage of explained '
+                      'variance',
+            'xticks': columns, 'yticks': list(percent_variance), 'threshold-x': columns[limit],
             'threshold': list(percent_variance)[limit], 'Acceptable variance explained':
-                round(sum_*100, 2), 'running_sum': running_sum[:15], 'limit':limit+1
+                round(sum_ * 100, 2), 'running_sum': running_sum, 'limit': limit + 1
             }
     return data
 
@@ -99,9 +107,11 @@ def screePCALoadingsHandler(df, datatype):
     pcaComponents['SumSquared'] = l
     pcaComponents = pcaComponents.sort_values(by='SumSquared', ascending=False)
     # pca highest loadings
-    data = {'Chart Title': 'Top 3 attributes with highest PCA loadings for '+data_type[datatype], 'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
-                                                                                                                   'variance',
-            'xticks': list(pcaComponents['Features'])[:15],'threshold-x':list(pcaComponents['Features'])[2], 'threshold':list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])[:15]}
+    data = {'Chart Title': 'Top 3 attributes with highest PCA loadings for ' + data_type[datatype],
+            'xlabel': 'Attributes', 'ylabel': 'Sum of squared loadings'
+                                              'variance',
+            'xticks': list(pcaComponents['Features']), 'threshold-x': list(pcaComponents['Features'])[2],
+            'threshold': list(pcaComponents['SumSquared'])[2], 'yticks': list(pcaComponents['SumSquared'])}
     return data
 
 
@@ -114,13 +124,38 @@ def scatter2PCAHandler(df, datatype):
     data = {'Chart Title': 'Scatter plot of data projected into the top 2 PCA vectors for ' + data_type[datatype],
             'xlabel': 'PC1', 'ylabel': 'PC2',
             'xticks': list(principalComponents['PC1']), 'yticks': list(principalComponents['PC2']),
-            'minmax':{'p1_min': min(list(principalComponents['PC1'])), 'p1_max': max(list(principalComponents['PC1'])),
-                      'p2_min': min(list(principalComponents['PC2'])), 'p2_max': max(list(principalComponents['PC2']))}
+            'minmax': {'p1_min': min(list(principalComponents['PC1'])), 'p1_max': max(list(principalComponents['PC1'])),
+                       'p2_min': min(list(principalComponents['PC2'])), 'p2_max': max(list(principalComponents['PC2']))}
             }
     return data
 
 
-def mdsEuHandler(df, datatype):
+def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
+
+    if datatype == 'og':
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'xticks': list(mdsEuOg['MDS1']), 'yticks': list(mdsEuOg['MDS2']),
+            'minmax': {'p1_min': min(list(mdsEuOg['MDS1'])), 'p1_max': max(list(mdsEuOg['MDS1'])),
+                       'p2_min': min(list(mdsEuOg['MDS2'])), 'p2_max': max(list(mdsEuOg['MDS2']))}
+            }
+    elif datatype == 'rn':
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'xticks': list(mdsEuRn['MDS1']), 'yticks': list(mdsEuRn['MDS2']),
+            'minmax': {'p1_min': min(list(mdsEuRn['MDS1'])), 'p1_max': max(list(mdsEuRn['MDS1'])),
+                       'p2_min': min(list(mdsEuRn['MDS2'])), 'p2_max': max(list(mdsEuRn['MDS2']))}
+        }
+    else:
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'xticks': list(mdsEuSt['MDS1']), 'yticks': list(mdsEuSt['MDS2']),
+            'minmax': {'p1_min': min(list(mdsEuSt['MDS1'])), 'p1_max': max(list(mdsEuSt['MDS1'])),
+                       'p2_min': min(list(mdsEuSt['MDS2'])), 'p2_max': max(list(mdsEuSt['MDS2']))}
+        }
     return None
 
 
@@ -130,3 +165,18 @@ def mdsCoHandler(df, datatype):
 
 def scatterMaHandler(df, datatype):
     return None
+
+
+
+def precomputeMDS(df):
+    mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, random_state=None,
+                       dissimilarity="precomputed", n_jobs=1)
+    mdsEuOg = pd.DataFrame(data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(df))).embedding_, 3),
+                           columns=['MDS1', 'MDS2'])
+    mdsEuRn = pd.DataFrame(
+        data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(randomsampler(df)))).embedding_, 3),
+        columns=['MDS1', 'MDS2'])
+    mdsEuSt = pd.DataFrame(
+        data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(stratsampler(df)))).embedding_, 3),
+        columns=['MDS1', 'MDS2'])
+    return mdsEuOg, mdsEuRn, mdsEuSt

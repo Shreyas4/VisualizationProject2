@@ -35,6 +35,8 @@ function updateChart(chart_data, task, datatype) {
         case 'scatter2PCA':
             drawScatter2PCA('scatter2PCA', datatype.value, chart_data);
             break;
+        case 'mdsEu':
+            drawScatterMDSEu('mdsEu', datatype.value, chart_data);
         default:
         // code block
     }
@@ -322,7 +324,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr("x", svgWidth)
         .attr("y", -6)
         .style("text-anchor", "end")
-        .text("PC1");
+        .text(chart_data['xlabel']);
 
     chart.append("g")
         .attr("class", "axis")
@@ -334,7 +336,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("PC2");
+        .text(chart_data['ylabel']);
 
     chart.selectAll(".dot")
         .data(my_sample)
@@ -351,8 +353,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
                 .transition()
                 .duration(100)
                 .attr("r", 10.5)
-                .style("stroke", '#000')
-                .style("fill", '#000');
+                .style("stroke", '#7f2420')
+                .style("fill", '#7f2420');
             chart.append("text")
                 .attr('class', 'dotvalue')
                 .attr('x', function() {
@@ -369,7 +371,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
             d3.select(this)
                 .transition()
                 .duration(100)
-                .attr("r", 5.0)
+                .attr("r", 3.5)
                 .style("stroke", function(d) { return colorScale(Math.abs(d.x)); })
                 .style("fill", function(d) { return colorScale(Math.abs(d.x)); })
             ;
@@ -408,5 +410,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
             .tickSize(svgHeight)
             .tickFormat(''));
 
+}
 
+function drawScatterMDSEu(mdsEu, value, chart_data) {
+    drawScatter2PCA(mdsEu, value, chart_data);
 }
