@@ -281,19 +281,21 @@ function drawPCALoadings(task, datatype, chart_data) {
 }
 
 function drawScatter2PCA(scatter2PCA, value, chart_data) {
-    console.log(scatter2PCA, value, chart_data);
     d3.selectAll("svg > *").remove();
     const svg = d3.select('svg');
 
     const svgMargin = 100;
     const svgHeight =document.getElementById('container').clientHeight-(2*svgMargin);
     const svgWidth = document.getElementById('container').clientWidth-(2*svgMargin);
-
+    let p = svgMargin+(svgWidth-svgHeight)/2;
+    console.log(p);
     const chart = svg.append('g')
-        .attr('transform', 'translate('+svgMargin+','+svgMargin+')');
+        .attr('transform', 'translate('+p+','+svgMargin+')')
+        .style('display', 'block')
+        .style('margin', 'auto');
 
     var xScale = d3.scaleLinear()
-        .range([0, svgWidth])
+        .range([0, svgHeight])
         .domain([chart_data['minmax']['p1_min'], chart_data['minmax']['p1_max']]);
 
     var yScale = d3.scaleLinear()
@@ -313,9 +315,6 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
     });
 
     const color = '#117D7F';
-    const colorScale = d3.scaleLinear()
-        .domain([chart_data['minmax']['p1_min'], chart_data['minmax']['p1_max']])
-        .range([d3.rgb(color).darker(), d3.rgb(color).brighter()]);
 
     chart.append("g")
         .attr("class", "axis")
@@ -323,7 +322,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .call(d3.axisBottom(xScale))
         .append("text")
         .attr("class", "label")
-        .attr("x", svgWidth)
+        .attr("x", svgHeight)
         .attr("y", -6)
         .style("text-anchor", "end")
         .text(chart_data['xlabel']);
@@ -348,8 +347,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr("r", 3.5)
         .attr("cx", function(d) { return xScale(d.x); })
         .attr("cy", function(d) { return yScale(d.y); })
-        .style("stroke", function(d) { return colorScale(Math.abs(d.x)); })
-        .style("fill", function(d) { return colorScale(Math.abs(d.x)); })
+        .style("stroke", color)
+        .style("fill", color)
         .on('mouseover', function (d) {
             d3.select(this)
                 .transition()
@@ -374,8 +373,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
                 .transition()
                 .duration(100)
                 .attr("r", 3.5)
-                .style("stroke", function(d) { return colorScale(Math.abs(d.x)); })
-                .style("fill", function(d) { return colorScale(Math.abs(d.x)); })
+                .style("stroke", color)
+                .style("fill", color)
             ;
             d3.selectAll('.dotvalue')
                 .remove()
@@ -398,7 +397,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
     chart.append('g')
         .attr('class', 'grid')
         .call(horizontalLines()
-            .tickSize(-svgWidth)
+            .tickSize(-svgHeight)
             .tickFormat(''));
 
     const verticalLines = function () {
