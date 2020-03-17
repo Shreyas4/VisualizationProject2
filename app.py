@@ -1,15 +1,16 @@
 from flask import Flask, render_template, jsonify, request
 import pandas as pd
-
+import time
 import utils
 
 app = Flask(__name__)
 df = pd.read_csv('VisData.csv')
 df = utils.preprocess(df)
-
+start = time.time()
 mdsEuOg, mdsEuRn, mdsEuSt = utils.precomputeMDS(df)
 mdsCoOg, mdsCoRn, mdsCoSt = utils.precomputeMDSCo(df)
-print('Done computing MDS')
+
+print('Computed MDS dissimilarity matrices in ', (time.time()-start), 'seconds')
 
 
 @app.route('/', methods=['POST', 'GET'])
