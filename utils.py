@@ -72,7 +72,7 @@ def screePCAHandler(df, datatype):
     running_sum = [round(list(percent_variance)[i] + sum(list(percent_variance)[:i]), 2) for i in
                    range(0, len(list(percent_variance)))]
 
-    data = {'Chart Title': 'Scree Plot of PCA Vectors for ' + data_type[datatype], 'xlabel': 'PCA Vectors',
+    data = {'Chart Title': 'Scree Plot of PCA vectors for ' + data_type[datatype], 'xlabel': 'PCA Vectors',
             'ylabel': 'Percentage of explained '
                       'variance',
             'xticks': columns, 'yticks': list(percent_variance), 'threshold-x': columns[limit],
@@ -155,7 +155,6 @@ def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
             'minmax': {'p1_min': min(list(mdsEuSt['MDS1'])), 'p1_max': max(list(mdsEuSt['MDS1'])),
                        'p2_min': min(list(mdsEuSt['MDS2'])), 'p2_max': max(list(mdsEuSt['MDS2']))}
         }
-    return None
 
 
 def mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype):
@@ -227,8 +226,7 @@ def scatterMaHandler(df, datatype):
 
 
 def precomputeMDS(df):
-    mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, random_state=None,
-                       dissimilarity="precomputed", n_jobs=1)
+    mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, dissimilarity='precomputed', random_state=None, n_jobs=1)
     mdsEuOg = pd.DataFrame(data=np.round(mds.fit_transform(euclidean_distances(MinMaxScaler().fit_transform(df))), 3),
                            columns=['MDS1', 'MDS2'])
     mdsEuRn = pd.DataFrame(
@@ -243,12 +241,27 @@ def precomputeMDS(df):
 def precomputeMDSCo(df):
     mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, random_state=None,
                        dissimilarity="precomputed", n_jobs=1)
-    mdsCoOg = pd.DataFrame(data=np.round(mds.fit_transform((df.T).corr()), 3),
+    dfog = np.array(df)
+    temp = [[0 for i in range(dfog.shape[0])] for i in range(dfog.shape[0])]
+    for i in range(dfog.shape[0]):
+        for j in range(dfog.shape[0]):
+            temp[i][j] = 1-abs(np.corrcoef(dfog[i], dfog[j])[0][1])
+
+    mdsCoOg = pd.DataFrame(data=np.round(mds.fit_transform(np.array(temp)), 3),
                            columns=['MDS1', 'MDS2'])
+    dfog = np.array(randomsampler(df))
+    for i in range(dfog.shape[0]):
+        for j in range(dfog.shape[0]):
+            temp[i][j] = 1 - abs(np.corrcoef(dfog[i], dfog[j])[0][1])
     mdsCoRn = pd.DataFrame(
-        data=np.round(mds.fit_transform((randomsampler(df).T).corr()), 3),
+        data=np.round(mds.fit_transform(np.array(temp)), 3),
         columns=['MDS1', 'MDS2'])
+    dfog = np.array(stratsampler(df))
+    for i in range(dfog.shape[0]):
+        for j in range(dfog.shape[0]):
+            temp[i][j] = 1 - abs(np.corrcoef(dfog[i], dfog[j])[0][1])
+
     mdsCoSt = pd.DataFrame(
-        data=np.round(mds.fit_transform((stratsampler(df).T).corr()), 3),
+        data=np.round(mds.fit_transform(np.array(temp)), 3),
         columns=['MDS1', 'MDS2'])
     return mdsCoOg, mdsCoRn, mdsCoSt
