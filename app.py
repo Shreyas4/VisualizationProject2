@@ -8,6 +8,8 @@ df = pd.read_csv('VisData.csv')
 df = utils.preprocess(df)
 
 mdsEuOg, mdsEuRn, mdsEuSt = utils.precomputeMDS(df)
+mdsCoOg, mdsCoRn, mdsCoSt = utils.precomputeMDSCo(df)
+print('Done computing MDS')
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -30,7 +32,7 @@ def index():
         elif task == 'mdsEu':
             return jsonify(utils.mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype))
         elif task == 'mdsCo':
-            return jsonify(utils.mdsCoHandler(process_df, datatype))
+            return jsonify(utils.mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype))
         elif task == 'scatterMa':
             return jsonify(utils.scatterMaHandler(process_df, datatype))
         else:

@@ -37,6 +37,8 @@ function updateChart(chart_data, task, datatype) {
             break;
         case 'mdsEu':
             drawScatterMDSEu('mdsEu', datatype.value, chart_data);
+        case 'mdsCo':
+            drawScatterMDSCo('mdsCo', datatype.value, chart_data);
         default:
         // code block
     }
@@ -320,7 +322,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr("transform", "translate(0," + yScale(0) + ")")
         .call(d3.axisBottom(xScale))
         .append("text")
-        .attr("class", "dotvalue")
+        .attr("class", "label")
         .attr("x", svgWidth)
         .attr("y", -6)
         .style("text-anchor", "end")
@@ -331,7 +333,7 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr("transform", "translate(" + xScale(0) + ",0)")
         .call(d3.axisLeft(yScale))
         .append("text")
-        .attr("class", "dotvalue")
+        .attr("class", "label")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
@@ -414,4 +416,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
 
 function drawScatterMDSEu(mdsEu, value, chart_data) {
     drawScatter2PCA(mdsEu, value, chart_data);
+}
+
+function drawScatterMDSCo(mdsCo, value, chart_data) {
+    drawScatter2PCA(mdsCo, value, chart_data);
 }

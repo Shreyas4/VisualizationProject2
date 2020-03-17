@@ -4,9 +4,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 import numpy as np
 
-from matplotlib import pyplot as plt
-from matplotlib.collections import LineCollection
-
 from sklearn import manifold
 from sklearn.metrics import euclidean_distances
 
@@ -122,7 +119,7 @@ def scatter2PCAHandler(df, datatype):
     principalComponents = principalComponents[:, :2]
     principalComponents = pd.DataFrame(data=np.round(principalComponents, 3), columns=['PC1', 'PC2'])
     data = {'Chart Title': 'Scatter plot of data projected into the top 2 PCA vectors for ' + data_type[datatype],
-            'xlabel': 'PC1', 'ylabel': 'PC2',
+            'xlabel': 'PC-1', 'ylabel': 'PC-2',
             'xticks': list(principalComponents['PC1']), 'yticks': list(principalComponents['PC2']),
             'minmax': {'p1_min': min(list(principalComponents['PC1'])), 'p1_max': max(list(principalComponents['PC1'])),
                        'p2_min': min(list(principalComponents['PC2'])), 'p2_max': max(list(principalComponents['PC2']))}
@@ -131,27 +128,26 @@ def scatter2PCAHandler(df, datatype):
 
 
 def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
-
     if datatype == 'og':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
-            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuOg['MDS1']), 'yticks': list(mdsEuOg['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuOg['MDS1'])), 'p1_max': max(list(mdsEuOg['MDS1'])),
                        'p2_min': min(list(mdsEuOg['MDS2'])), 'p2_max': max(list(mdsEuOg['MDS2']))}
-            }
+        }
     elif datatype == 'rn':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
-            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuRn['MDS1']), 'yticks': list(mdsEuRn['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuRn['MDS1'])), 'p1_max': max(list(mdsEuRn['MDS1'])),
                        'p2_min': min(list(mdsEuRn['MDS2'])), 'p2_max': max(list(mdsEuRn['MDS2']))}
         }
     else:
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS dimensions for ' + data_type[datatype],
-            'xlabel': 'MDS1', 'ylabel': 'MDS2',
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuSt['MDS1']), 'yticks': list(mdsEuSt['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuSt['MDS1'])), 'p1_max': max(list(mdsEuSt['MDS1'])),
                        'p2_min': min(list(mdsEuSt['MDS2'])), 'p2_max': max(list(mdsEuSt['MDS2']))}
@@ -159,7 +155,31 @@ def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
     return None
 
 
-def mdsCoHandler(df, datatype):
+def mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype):
+    if datatype == 'og':
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
+            'xticks': list(mdsCoOg['MDS1']), 'yticks': list(mdsCoOg['MDS2']),
+            'minmax': {'p1_min': min(list(mdsCoOg['MDS1'])), 'p1_max': max(list(mdsCoOg['MDS1'])),
+                       'p2_min': min(list(mdsCoOg['MDS2'])), 'p2_max': max(list(mdsCoOg['MDS2']))}
+        }
+    elif datatype == 'rn':
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
+            'xticks': list(mdsCoRn['MDS1']), 'yticks': list(mdsCoRn['MDS2']),
+            'minmax': {'p1_min': min(list(mdsCoRn['MDS1'])), 'p1_max': max(list(mdsCoRn['MDS1'])),
+                       'p2_min': min(list(mdsCoRn['MDS2'])), 'p2_max': max(list(mdsCoRn['MDS2']))}
+        }
+    else:
+        return {
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
+            'xticks': list(mdsCoSt['MDS1']), 'yticks': list(mdsCoSt['MDS2']),
+            'minmax': {'p1_min': min(list(mdsCoSt['MDS1'])), 'p1_max': max(list(mdsCoSt['MDS1'])),
+                       'p2_min': min(list(mdsCoSt['MDS2'])), 'p2_max': max(list(mdsCoSt['MDS2']))}
+        }
     return None
 
 
@@ -167,16 +187,29 @@ def scatterMaHandler(df, datatype):
     return None
 
 
-
 def precomputeMDS(df):
     mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, random_state=None,
                        dissimilarity="precomputed", n_jobs=1)
-    mdsEuOg = pd.DataFrame(data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(df))).embedding_, 3),
+    mdsEuOg = pd.DataFrame(data=np.round(mds.fit_transform(euclidean_distances(MinMaxScaler().fit_transform(df))), 3),
                            columns=['MDS1', 'MDS2'])
     mdsEuRn = pd.DataFrame(
-        data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(randomsampler(df)))).embedding_, 3),
+        data=np.round(mds.fit_transform(euclidean_distances(MinMaxScaler().fit_transform(randomsampler(df)))), 3),
         columns=['MDS1', 'MDS2'])
     mdsEuSt = pd.DataFrame(
-        data=np.round(mds.fit(euclidean_distances(MinMaxScaler().fit_transform(stratsampler(df)))).embedding_, 3),
+        data=np.round(mds.fit_transform(euclidean_distances(MinMaxScaler().fit_transform(stratsampler(df)))), 3),
         columns=['MDS1', 'MDS2'])
     return mdsEuOg, mdsEuRn, mdsEuSt
+
+
+def precomputeMDSCo(df):
+    mds = manifold.MDS(n_components=2, max_iter=300, eps=0.001, random_state=None,
+                       dissimilarity="precomputed", n_jobs=1)
+    mdsCoOg = pd.DataFrame(data=np.round(mds.fit_transform((df.T).corr()), 3),
+                           columns=['MDS1', 'MDS2'])
+    mdsCoRn = pd.DataFrame(
+        data=np.round(mds.fit_transform(euclidean_distances((randomsampler(df).T).corr())), 3),
+        columns=['MDS1', 'MDS2'])
+    mdsCoSt = pd.DataFrame(
+        data=np.round(mds.fit_transform(euclidean_distances((stratsampler(df).T).corr())), 3),
+        columns=['MDS1', 'MDS2'])
+    return mdsCoOg, mdsCoRn, mdsCoSt
