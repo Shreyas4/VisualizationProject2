@@ -111,7 +111,7 @@ def scatter2PCAHandler(df, datatype):
     principalComponents = pca.fit_transform(x)
     principalComponents = principalComponents[:, :2]
     principalComponents = pd.DataFrame(data=np.round(principalComponents, 3), columns=['PC1', 'PC2'])
-    data = {'Chart Title': 'Scatter plot of top 2 PCA vectors for ' + data_type[datatype],
+    data = {'Chart Title': 'Scatter plot of data projected into the top 2 PCA vectors for ' + data_type[datatype],
             'xlabel': 'PC1', 'ylabel': 'PC2',
             'xticks': list(principalComponents['PC1']), 'yticks': list(principalComponents['PC2']),
             'minmax':{'p1_min': min(list(principalComponents['PC1'])), 'p1_max': max(list(principalComponents['PC1'])),

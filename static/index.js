@@ -100,11 +100,6 @@ function drawScreePCA(task, datatype, chart_data) {
         .domain([d3.min(yList), d3.max(yList)])
         .range([d3.rgb(preThresholdColor).darker(), d3.rgb(preThresholdColor).brighter()]);
 
-    const horizontalLines = function () {
-        return d3.axisLeft()
-            .scale(yScale)
-    };
-
     var rotateBy = '0';
     var xLabelPosition = 1.7;
     if (task==='screePCALoadings') {
@@ -127,6 +122,11 @@ function drawScreePCA(task, datatype, chart_data) {
         chart.append('g')
             .call(d3.axisLeft(yScale)).selectAll('.tick line').remove();
     }
+
+    const horizontalLines = function () {
+        return d3.axisLeft()
+            .scale(yScale)
+    };
 
 
     chart.append('g')
@@ -290,11 +290,11 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
 
     var xScale = d3.scaleLinear()
         .range([0, svgWidth])
-        .domain([Math.floor(chart_data['minmax']['p1_min']), Math.ceil(chart_data['minmax']['p1_max'])]);
+        .domain([chart_data['minmax']['p1_min'], chart_data['minmax']['p1_max']]);
 
     var yScale = d3.scaleLinear()
         .range([svgHeight, 0])
-        .domain([Math.floor(chart_data['minmax']['p2_min']), Math.ceil(chart_data['minmax']['p2_max'])]);
+        .domain([chart_data['minmax']['p2_min'], chart_data['minmax']['p2_max']]);
 
     var my_sample = [];
     for (var i=0; i<chart_data['xticks'].length; i++) {
@@ -383,5 +383,30 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
         .attr('y', 40)
         .attr('text-anchor', 'middle')
         .text(chart_data['Chart Title']);
+
+    const horizontalLines = function () {
+        return d3.axisLeft()
+            .scale(yScale)
+    };
+
+    chart.selectAll('.tick line').remove();
+
+    chart.append('g')
+        .attr('class', 'grid')
+        .call(horizontalLines()
+            .tickSize(-svgWidth)
+            .tickFormat(''));
+
+    const verticalLines = function () {
+        return d3.axisBottom()
+            .scale(xScale)
+    };
+
+    chart.append('g')
+        .attr('class', 'grid')
+        .call(verticalLines()
+            .tickSize(svgHeight)
+            .tickFormat(''));
+
 
 }
