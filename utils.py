@@ -16,7 +16,7 @@ data_type = {
 
 def preprocess(df):
     # df = df.drop(['State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
-    df = df.drop(['State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
+    df = df.drop(['NO2_1st_Max_Hour', 'O3_1st_Max_Hour', 'SO2_1st_Max_Hour', 'CO_1st_Max_Hour', 'Year', 'State', 'County', 'NO2_Units', 'O3_Units', 'SO2_Units', 'CO_Units'], axis=1)
     le = LabelEncoder()
     for col in df.columns.values:
         if df[col].dtype == object:
@@ -130,7 +130,8 @@ def scatter2PCAHandler(df, datatype):
 def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
     if datatype == 'og':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[
+                datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuOg['MDS1']), 'yticks': list(mdsEuOg['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuOg['MDS1'])), 'p1_max': max(list(mdsEuOg['MDS1'])),
@@ -138,7 +139,8 @@ def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
         }
     elif datatype == 'rn':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[
+                datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuRn['MDS1']), 'yticks': list(mdsEuRn['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuRn['MDS1'])), 'p1_max': max(list(mdsEuRn['MDS1'])),
@@ -146,7 +148,8 @@ def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
         }
     else:
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Euclidian) dimensions for ' + data_type[
+                datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsEuSt['MDS1']), 'yticks': list(mdsEuSt['MDS2']),
             'minmax': {'p1_min': min(list(mdsEuSt['MDS1'])), 'p1_max': max(list(mdsEuSt['MDS1'])),
@@ -158,7 +161,8 @@ def mdsEuHandler(mdsEuOg, mdsEuRn, mdsEuSt, datatype):
 def mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype):
     if datatype == 'og':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' +
+                           data_type[datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsCoOg['MDS1']), 'yticks': list(mdsCoOg['MDS2']),
             'minmax': {'p1_min': min(list(mdsCoOg['MDS1'])), 'p1_max': max(list(mdsCoOg['MDS1'])),
@@ -166,7 +170,8 @@ def mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype):
         }
     elif datatype == 'rn':
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' +
+                           data_type[datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsCoRn['MDS1']), 'yticks': list(mdsCoRn['MDS2']),
             'minmax': {'p1_min': min(list(mdsCoRn['MDS1'])), 'p1_max': max(list(mdsCoRn['MDS1'])),
@@ -174,17 +179,51 @@ def mdsCoHandler(mdsCoOg, mdsCoRn, mdsCoSt, datatype):
         }
     else:
         return {
-            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' + data_type[datatype],
+            'Chart Title': 'Scatter plot of data projected into the top 2 MDS (Correlation) dimensions for ' +
+                           data_type[datatype],
             'xlabel': 'MDS-1', 'ylabel': 'MDS-2',
             'xticks': list(mdsCoSt['MDS1']), 'yticks': list(mdsCoSt['MDS2']),
             'minmax': {'p1_min': min(list(mdsCoSt['MDS1'])), 'p1_max': max(list(mdsCoSt['MDS1'])),
                        'p2_min': min(list(mdsCoSt['MDS2'])), 'p2_max': max(list(mdsCoSt['MDS2']))}
         }
-    return None
 
 
 def scatterMaHandler(df, datatype):
-    return None
+    pca = PCA(n_components=df.shape[1])
+    x = MinMaxScaler().fit_transform(df)
+    principalComponents = pca.fit_transform(x)
+    limit = 0
+    sum_ = 0
+    for i in range(0, df.shape[1]):
+        if sum_ <= 0.75:
+            sum_ = sum_ + pca.explained_variance_ratio_[i]
+            limit = i
+        else:
+            break
+    columns = ['PC' + str(x) for x in range(1, limit + 2)]
+    pcaComponents = pd.DataFrame(data=abs(pca.components_[:, :limit + 1]), columns=columns)
+    pcaComponents['Features'] = df.columns.values
+    pcaComponents['SumSquared'] = 0
+    l = []
+    for i, r in pcaComponents.iterrows():
+        l.append(round(sum(x * x for x in r['PC1':'PC' + str(limit + 1)].values), 4))
+    pcaComponents['SumSquared'] = l
+    pcaComponents = list(pcaComponents.sort_values(by='SumSquared', ascending=False).head(3)['Features'])
+
+    data = {}
+    c=1
+    for i in range(1, 4):
+        for j in range(1, 4):
+            key = 'c'+str(c)
+            c=c+1
+            data[key] = {
+                'xlabel': pcaComponents[i-1], 'ylabel': pcaComponents[j-1],
+                'xticks': list(df[pcaComponents[i-1]]), 'yticks': list(df[pcaComponents[j-1]]),
+                'minmax': {'p1_min': min(list(df[pcaComponents[i-1]])), 'p1_max': max(list(df[pcaComponents[i-1]])),
+                           'p2_min': min(list(df[pcaComponents[j-1]])), 'p2_max': max(list(df[pcaComponents[j-1]]))}
+            }
+    data['Chart Title'] = 'Scatter plot matrix of the 3 highest PCA loaded attributes for ' + data_type[datatype]
+    return data
 
 
 def precomputeMDS(df):

@@ -37,8 +37,13 @@ function updateChart(chart_data, task, datatype) {
             break;
         case 'mdsEu':
             drawScatterMDSEu('mdsEu', datatype.value, chart_data);
+            break;
         case 'mdsCo':
             drawScatterMDSCo('mdsCo', datatype.value, chart_data);
+            break;
+        case 'scatterMa':
+            drawScatterMatrix('scatterMa', datatype.value, chart_data);
+            break;
         default:
         // code block
     }
@@ -288,11 +293,8 @@ function drawScatter2PCA(scatter2PCA, value, chart_data) {
     const svgHeight =document.getElementById('container').clientHeight-(2*svgMargin);
     const svgWidth = document.getElementById('container').clientWidth-(2*svgMargin);
     let p = svgMargin+(svgWidth-svgHeight)/2;
-    console.log(p);
     const chart = svg.append('g')
-        .attr('transform', 'translate('+p+','+svgMargin+')')
-        .style('display', 'block')
-        .style('margin', 'auto');
+        .attr('transform', 'translate('+p+','+svgMargin+')');
 
     var xScale = d3.scaleLinear()
         .range([0, svgHeight])
@@ -419,4 +421,148 @@ function drawScatterMDSEu(mdsEu, value, chart_data) {
 
 function drawScatterMDSCo(mdsCo, value, chart_data) {
     drawScatter2PCA(mdsCo, value, chart_data);
+}
+
+function drawScatterCell(scatter2PCA, value, chart_data, svgHeight, svgWidth, tx, ty) {
+    const svg = d3.select('svg');
+
+    const chart = svg.append('g')
+        .attr('transform', 'translate('+tx+','+ty+')');
+
+    var xScale = d3.scaleLinear()
+        .range([0, svgWidth])
+        .domain([chart_data['minmax']['p1_min'], chart_data['minmax']['p1_max']]);
+
+    var yScale = d3.scaleLinear()
+        .range([svgHeight, 0])
+        .domain([chart_data['minmax']['p2_min'], chart_data['minmax']['p2_max']]);
+
+    var my_sample = [];
+    for (var i=0; i<chart_data['xticks'].length; i++) {
+        my_sample.push({'x':chart_data['xticks'][i], 'y':chart_data['yticks'][i]});
+    }
+
+    yList = my_sample.map(function (a) {
+        return a.y;
+    });
+    xList = my_sample.map(function (a) {
+        return a.x;
+    });
+
+    const color = '#117D7F';
+
+    chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + yScale(0) + ")")
+        .call(d3.axisBottom(xScale).tickFormat(d3.format(".0s")))
+        .append("text")
+        .attr("class", "label")
+        .attr("x", svgWidth)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text(chart_data['xlabel']);
+
+    chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + xScale(0) + ",0)")
+        .call(d3.axisLeft(yScale).tickFormat(d3.format(".0s")))
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(chart_data['ylabel']);
+
+    chart.selectAll(".dot")
+        .data(my_sample)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("r", 1)
+        .attr("cx", function(d) { return xScale(d.x); })
+        .attr("cy", function(d) { return yScale(d.y); })
+        .style("stroke", color)
+        .style("fill", color)
+        .on('mouseover', function (d) {
+            d3.select(this)
+                .transition()
+                .duration(100)
+                .attr("r", 1.5)
+                .style("stroke", '#7f2420')
+                .style("fill", '#7f2420');
+            chart.append("text")
+                .attr('class', 'dotvalue')
+                .attr('x', function() {
+                    return xScale(d.x+0.06);
+                })
+                .attr('y', function() {
+                    return yScale(d.y);
+                })
+                .text(function() {
+                    return [d.x, d.y];
+                });
+        })
+        .on('mouseout', function () {
+            d3.select(this)
+                .transition()
+                .duration(100)
+                .attr("r", 1)
+                .style("stroke", color)
+                .style("fill", color)
+            ;
+            d3.selectAll('.dotvalue')
+                .remove()
+        });
+
+    const horizontalLines = function () {
+        return d3.axisLeft()
+            .scale(yScale)
+    };
+
+    chart.selectAll('.tick line').remove();
+
+    chart.append('g')
+        .attr('class', 'grid')
+        .call(horizontalLines()
+            .tickSize(-svgWidth)
+            .tickFormat(''));
+
+    const verticalLines = function () {
+        return d3.axisBottom()
+            .scale(xScale)
+    };
+
+    chart.append('g')
+        .attr('class', 'grid')
+        .call(verticalLines()
+            .tickSize(svgHeight)
+            .tickFormat(''));
+}
+
+function drawScatterMatrix(scatterMa, value, chart_data) {
+    d3.selectAll("svg > *").remove();
+
+    const svgMargin = 70;
+    const svgHeight =document.getElementById('container').clientHeight-(2*svgMargin);
+    const svgWidth = document.getElementById('container').clientWidth-(2*svgMargin);
+    let cellHeight = (svgHeight-120)/3;
+    let cellWidth = (svgWidth-120)/3;
+    let padding = 60;
+    drawScatterCell(scatterMa, value, chart_data['c1'], cellHeight, cellWidth, svgMargin, svgMargin);
+    drawScatterCell(scatterMa, value, chart_data['c2'], cellHeight, cellWidth, svgMargin+cellWidth+padding, svgMargin);
+    drawScatterCell(scatterMa, value, chart_data['c3'], cellHeight, cellWidth, svgMargin+2*cellWidth+(padding*2), svgMargin);
+    drawScatterCell(scatterMa, value, chart_data['c4'], cellHeight, cellWidth, svgMargin, svgMargin+cellHeight+padding);
+    drawScatterCell(scatterMa, value, chart_data['c5'], cellHeight, cellWidth, svgMargin+cellWidth+padding, svgMargin+cellHeight+padding);
+    drawScatterCell(scatterMa, value, chart_data['c6'], cellHeight, cellWidth, svgMargin+2*cellWidth+(padding*2), svgMargin+cellHeight+padding);
+    drawScatterCell(scatterMa, value, chart_data['c7'], cellHeight, cellWidth, svgMargin, svgMargin+2*cellHeight+(padding*2));
+    drawScatterCell(scatterMa, value, chart_data['c8'], cellHeight, cellWidth, svgMargin+cellWidth+padding, svgMargin+2*cellHeight+(padding*2));
+    drawScatterCell(scatterMa, value, chart_data['c9'], cellHeight, cellWidth, svgMargin+2*cellWidth+(padding*2), svgMargin+2*cellHeight+(padding*2));
+    const svg = d3.select('svg');
+    svg.append('text')
+        .attr('class', 'title')
+        .attr('x', svgWidth / 2 + svgMargin)
+        .attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .text(chart_data['Chart Title']);
 }
